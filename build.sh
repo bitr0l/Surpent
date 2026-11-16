@@ -48,10 +48,21 @@ pull_kernel() {
 }
 
 #
+# Pull the bootloader sources
+#
+pull_loader() {
+    if [ ! -d boot ]
+    then
+        git clone https://github.com/bitr0l/Ignis boot --depth=1
+    fi
+}
+
+#
 # Pull all sources
 #
 pull_all() {
     pull_kernel
+    pull_loader
 }
 
 build() {
@@ -59,7 +70,12 @@ build() {
         ./build.sh
     popd
 
+    pushd boot;
+        ./build.sh
+    popd
+
     cp sys/out/dm1.sys out/
+    cp boot/out/* out/
 }
 
 build_prep
