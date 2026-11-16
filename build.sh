@@ -65,6 +65,24 @@ pull_all() {
     pull_loader
 }
 
+#
+# Build the disk image
+#
+make_disk() {
+    mkdir -p disk/EFI/BOOT
+
+    # Prepare the disk
+    cp out/*.EFI disk/EFI/BOOT
+    cp out/dm1.sys disk/dm1.sys
+    cp base/boot/ignis.cfg disk/ignis.cfg
+    rm -f surpent.img
+
+    # Generate the USB stick image
+    truncate -s 4M out/surpent.img
+    mkfs.fat -F 12 out/surpent.img 4096
+    mcopy -s -i out/surpent.img disk/* ::/
+}
+
 build() {
     pushd sys;
         ./build.sh
@@ -76,6 +94,7 @@ build() {
 
     cp sys/out/dm1.sys out/
     cp boot/out/* out/
+    make_disk
 }
 
 build_prep
